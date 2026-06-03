@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 
-from src.read_excel_file import file_path
+from src.read_excel_file import file_path, get_transactions_excel
 
 #
 # def get_time():
@@ -86,4 +86,6 @@ if __name__ == '__main__':
         # Список расходов и поступлений.
         return sum([t['Сумма операции'] for t in transactions])
 
-    print(total_expenses(transactions_1))
+
+    result = get_transactions_excel(file_path)
+    print(total_expenses(result))
