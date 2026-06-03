@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+from idlelib.pyparse import trans
 
 from src.read_excel_file import file_path, get_transactions_excel
 
@@ -38,54 +39,48 @@ from src.read_excel_file import file_path, get_transactions_excel
 #
 #     pass
 
-if __name__ == '__main__':
 
-    transactions_1 = [{
-        "Дата операции": "01.01.2018 12:49:53",
-        "Дата платежа": "01.01.2018",
-        "Номер карты": "",
+
+
+     # file_path = os.path.join('vievs', 'result')
+
+def total_expenses(transactions: list[dict]) -> list:
+    """Получает список словарей с транзакциями
+    и возвращает объединенную сумму расходов или доходов в зависимости от данных."""
+
+    # Список расходов и поступлений.
+    return sum([t['Сумма операции'] for t in transactions])
+
+
+# result = get_transactions_excel(file_path)
+# print(total_expenses(result))
+
+
+def payment_amount(transactions: list[dict]) -> list[dict]:
+    """Ведется подсчет топ-5 транзакций по сумме платежа (от самых больших и в обратном порядке)."""
+
+    sorted_transaction = sorted(transactions, key=lambda x: x.get('Сумма платежа'), reverse=True)
+    return sorted_transaction[:5]
+
+transaction = {
+        "Дата операции": "05.11.2018 17:41:03",
+        "Дата платежа": "07.11.2018",
+        "Номер карты": "*7197",
         "Статус": "OK",
-        "Сумма операции": -3000.0,
+        "Сумма операции": -886.0,
         "Валюта операции": "RUB",
-        "Сумма платежа": -3000.0,
+        "Сумма платежа": -886.0,
         "Валюта платежа": "RUB",
         "Кэшбэк": "",
-        "Категория": "Переводы",
-        "MCC": "",
-        "Описание": "Линзомат ТЦ Юность",
-        "Бонусы (включая кэшбэк)": 0,
+        "Категория": "Супермаркеты",
+        "MCC": 5499.0,
+        "Описание": "Колхоз",
+        "Бонусы (включая кэшбэк)": 1,
         "Округление на инвесткопилку": 0,
-        "Сумма операции с округлением": 3000.0,
-    },
-    {
-        "Дата операции": "10.01.2018 12:59:23",
-        "Дата платежа": "10.01.2018",
-        "Номер карты": "",
-        "Статус": "OK",
-        "Сумма операции": 30000.0,
-        "Валюта операции": "RUB",
-        "Сумма платежа": 30000.0,
-        "Валюта платежа": "RUB",
-        "Кэшбэк": "",
-        "Категория": "Пополнения",
-        "MCC": 6012.0,
-        "Описание": "Перевод с карты",
-        "Бонусы (включая кэшбэк)": 0,
-        "Округление на инвесткопилку": 0,
-        "Сумма операции с округлением": 30000.0,
-    }]
+        "Сумма операции с округлением": 886.0,
+    }
 
-
-
-    # file_path = os.path.join('vievs', 'result')
-
-    def total_expenses(transactions: list[dict]) -> list:
-        """Получает список словарей с транзакциями
-        и возвращает объединенную сумму расходов или доходов в зависимости от данных."""
-
-        # Список расходов и поступлений.
-        return sum([t['Сумма операции'] for t in transactions])
-
-
-    result = get_transactions_excel(file_path)
-    print(total_expenses(result))
+# Делаю функцию ко пешбеку.
+def cashback(transactions: list[dict]) -> list[dict]:
+    for transaction in transactions:
+        summ_rub = transaction.get('Сумма операции') / 100 * 1
