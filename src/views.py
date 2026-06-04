@@ -40,11 +40,20 @@ def get_stocks():
 
     url = 'https://raw.githubusercontent.com/Ate329/top-us-stock-tickers/main/tickers/sp500.csv'
     response = requests.get(url)
+    return response
 
+
+def file_csv_stocks():
+    """Сохраняем полученные данные по акциям в csv файл."""
+
+    result_get_stocks = get_stocks()
     path_file_csv = os.path.join('..', 'data', 'list_stocks.csv')
     with open(path_file_csv, 'w', encoding='utf-8') as f:
-        f.write(response.text)
-    return response
+        f.write(result_get_stocks.text)
+    return None
+
+if __name__ == '__main__':
+    file_csv_stocks()
 
 
 

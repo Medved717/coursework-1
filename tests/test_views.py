@@ -1,9 +1,10 @@
+import os
 from msvcrt import putch
 
 import pytest
 import requests
-from unittest.mock import patch, MagicMock
-from src.views import get_exchange_rate
+from unittest.mock import patch, MagicMock, Mock
+from src.views import get_exchange_rate, get_stocks, file_csv_stocks
 
 
 @patch('src.views.requests.get')
@@ -50,4 +51,22 @@ def test_get_exchange_rate_no_internet(mock_get):
     assert result == 0.0
 
 
-# @patch('src.views.requests.get')
+@patch('src.views.requests.get')
+def test_get_stocks(mock_get):
+    """Мокаем requests.get."""
+
+    fake_response = Mock()
+    fake_response.text = 'Вернулся текст.'
+    mock_get.return_value = fake_response
+    result = get_stocks()
+    mock_get.assert_called_once()
+
+
+@patch('src.views.os.path.join')
+def test_file_csv_stocks(mock_join):
+    """Проверка использования пути сохранения."""
+
+    file_csv_stocks()
+    mock_join.assert_called_once_with('..', 'data', 'list_stocks.csv')
+
+
