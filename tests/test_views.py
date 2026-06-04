@@ -1,52 +1,50 @@
-import datetime
+from msvcrt import putch
 
 import pytest
+import requests
 from unittest.mock import patch, MagicMock
-
-from src.views import get_time, greeting
-
-
-@patch('src.views.datetime')
-def test_get_time(mock_datetime):
-    """Тестирование методом mock по настоящему времени с подменой."""
-
-    mock_datetime.now.return_value = datetime.datetime(2026, 6, 3, 10, 28, 4)
-    result = get_time()
-    assert result == '2026-06-03 10:28:04'
+from src.views import get_exchange_rate
 
 
-@patch('src.views.get_time')
-def test_greeting_morning(mock_get_time):
-    """Тест по выводу: 'Доброе утро'"""
+@patch('src.views.requests.get')
+def test_get_exchange_rate(mock_get):
+    """Проверяет работу с полученными данными сервара по валютам."""
 
-    mock_get_time.return_value = '2026-06-03 10:28:04'
-    result = greeting(mock_get_time.return_value)
-    assert result == 'Доброе утро!'
+    mock_get.return_value.json.return_value = {
+    "Date": "2026-06-04T11:30:00+03:00",
+    "PreviousDate": "2026-06-03T11:30:00+03:00",
+    "PreviousURL": "//www.cbr-xml-daily.ru/archive/2026/06/03/daily_json.js",
+    "Timestamp": "2026-06-04T14:00:00+03:00",
+    "Valute": {
+        "USD": {
+            "ID": "R01235",
+            "NumCode": "840",
+            "CharCode": "USD",
+            "Nominal": 1,
+            "Name": "Доллар США",
+            "Value": 73.3436,
+            "Previous": 72.5597
+        },
+        "EUR": {
+            "ID": "R01239",
+            "NumCode": "978",
+            "CharCode": "EUR",
+            "Nominal": 1,
+            "Name": "Евро",
+            "Value": 85.1243,
+            "Previous": 84.6096
+        }
+    }
+}
+    result = get_exchange_rate()
+    assert result == {'currency_rates': [{'currency': 'USD', 'rate': 73.3436},
+                                         {'currency': 'EUR', 'rate': 85.1243}]}
 
 
-@patch('src.views.get_time')
-def test_greeting_day(mock_get_time):
-    """Тест по выводу: 'Добрый день!'"""
+@patch('src.views.requests.get')
+def test_get_exchange_rate_no_internet(mock_get):
+    """Проверка работы функции при отсутствии интернета"""
 
-    mock_get_time.return_value = '2026-06-03 15:28:04'
-    result = greeting(mock_get_time.return_value)
-    assert result == 'Добрый день!'
-
-
-@patch('src.views.get_time')
-def test_greeting_evening(mock_get_time):
-    """Тест по выводу: 'Добрый вечер!'"""
-
-    mock_get_time.return_value = '2026-06-03 20:28:04'
-    result = greeting(mock_get_time.return_value)
-    assert result == 'Добрый вечер!'
-
-
-@patch('src.views.get_time')
-def test_greeting_night(mock_get_time):
-    """Тест по выводу: 'Доброй ночи!'"""
-
-    mock_get_time.return_value = '2026-06-03 03:28:04'
-    result = greeting(mock_get_time.return_value)
-    assert result == 'Доброй ночи!'
-
+    mock_get.side_effect = requests.exceptions.RequestException('Нет интернет соединения!')
+    result = get_exchange_rate()
+    assert result == 0.0
