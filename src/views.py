@@ -62,25 +62,16 @@ def payment_amount(transactions: list[dict]) -> list[dict]:
     sorted_transaction = sorted(transactions, key=lambda x: x.get('Сумма платежа'), reverse=True)
     return sorted_transaction[:5]
 
-transaction = {
-        "Дата операции": "05.11.2018 17:41:03",
-        "Дата платежа": "07.11.2018",
-        "Номер карты": "*7197",
-        "Статус": "OK",
-        "Сумма операции": -886.0,
-        "Валюта операции": "RUB",
-        "Сумма платежа": -886.0,
-        "Валюта платежа": "RUB",
-        "Кэшбэк": "",
-        "Категория": "Супермаркеты",
-        "MCC": 5499.0,
-        "Описание": "Колхоз",
-        "Бонусы (включая кэшбэк)": 1,
-        "Округление на инвесткопилку": 0,
-        "Сумма операции с округлением": 886.0,
-    }
 
 # Делаю функцию ко пешбеку.
 def cashback(transactions: list[dict]) -> list[dict]:
     for transaction in transactions:
-        summ_rub = transaction.get('Сумма операции') / 100 * 1
+        summ_cashback = transaction.get('Сумма операции') * 0.01
+        if not summ_cashback:
+            transaction['Кэшбэк'] = summ_cashback
+        else:
+            transaction['Кэшбэк'] = 0
+    return transactions
+
+
+
