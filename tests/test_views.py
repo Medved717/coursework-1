@@ -48,3 +48,6 @@ def test_get_exchange_rate_no_internet(mock_get):
     mock_get.side_effect = requests.exceptions.RequestException('Нет интернет соединения!')
     result = get_exchange_rate()
     assert result == 0.0
+
+
+# @patch('src.views.requests.get')

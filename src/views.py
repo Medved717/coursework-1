@@ -1,4 +1,6 @@
 import json
+from os import write
+
 import requests
 import os
 
@@ -30,3 +32,19 @@ def get_exchange_rate():
     except requests.exceptions.RequestException:
         print('Не удалось выполнить запрос к серверу, попробуйте обратиться позже.')
         return 0.0
+
+
+# Здесь будет функция по приему курсов акций.
+def get_stocks():
+    """Получение csv - файла со списком реализуемых акций и их стоимостями."""
+
+    url = 'https://raw.githubusercontent.com/Ate329/top-us-stock-tickers/main/tickers/sp500.csv'
+    response = requests.get(url)
+
+    path_file_csv = os.path.join('..', 'data', 'list_stocks.csv')
+    with open(path_file_csv, 'w', encoding='utf-8') as f:
+        f.write(response.text)
+    return response
+
+
+
