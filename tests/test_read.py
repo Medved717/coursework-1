@@ -6,7 +6,7 @@ from src.read_file import get_csv_stocks, get_transactions_excel
 @patch('src.read_file.pd.read_excel')
 @patch('src.read_file.os.path.join')
 def test_get_transactions_excel(mock_os_path_join, mock_pd_read_excel):
-    """Описание теста."""
+    """Проверяем вывод списка словарей."""
 
     mock_os_path_join.return_value = 'Путь к файлу'
     mock_df = Mock()
