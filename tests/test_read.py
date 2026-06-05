@@ -1,6 +1,21 @@
 import pytest
 from unittest.mock import Mock, patch
-from src.read_file import get_csv_stocks
+from src.read_file import get_csv_stocks, get_transactions_excel
+
+
+@patch('src.read_file.pd.read_excel')
+@patch('src.read_file.os.path.join')
+def test_get_transactions_excel(mock_os_path_join, mock_pd_read_excel):
+    """Описание теста."""
+
+    mock_os_path_join.return_value = 'Путь к файлу'
+    mock_df = Mock()
+    mock_pd_read_excel.return_value = mock_df
+    mock_were = Mock()
+    mock_df.where.return_value = mock_were
+    mock_were.to_dict.return_value = [{'id': 1, 'name': 'test'}]
+    result = get_transactions_excel()
+    assert result == [{'id': 1, 'name': 'test'}]
 
 
 @patch('src.read_file.pd.read_csv')

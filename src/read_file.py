@@ -3,14 +3,17 @@ import os
 import openpyxl
 
 
-def get_transactions_excel(transactions_file):
+
+def get_transactions_excel():
     """Получение файла транзакций в формате excel и перевод в список словарей."""
 
     file_path = os.path.join("..", "data", "operations.xlsx")
-    read_file_excel = pd.read_excel(transactions_file)
+    read_file_excel = pd.read_excel(file_path)
     file_no_nan = read_file_excel.where(pd.notna(read_file_excel), "")
     exel_file_to_dict = file_no_nan.to_dict("records")
     return exel_file_to_dict
+
+print(get_transactions_excel())
 
 
 def get_csv_stocks() -> list[dict]:
