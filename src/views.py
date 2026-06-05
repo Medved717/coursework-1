@@ -52,8 +52,7 @@ def file_csv_stocks():
         f.write(result_get_stocks.text)
     return None
 
-if __name__ == '__main__':
-    file_csv_stocks()
+
 
 
 

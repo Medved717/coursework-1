@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 from idlelib.pyparse import trans
-from src.read_excel_file import file_path, get_transactions_excel
+from src.read_file import get_transactions_excel
 
 
 def mask_card(number_card: str) -> str:
