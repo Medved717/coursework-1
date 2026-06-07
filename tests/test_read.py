@@ -31,25 +31,6 @@ def test_get_csv_stocks(mock_os_path_join, mock_pd_read_csv, stock_list_data, st
     assert result == stock_list_filter
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 @patch('src.read_file.pd.read_csv')
 @patch('src.read_file.os.path.join')
 def test_get_csv_stocks_path(mock_join, mock_read, stock_list_data, stock_list_filter):
