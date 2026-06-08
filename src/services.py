@@ -2,9 +2,25 @@ import json
 from datetime import datetime
 
 
+# ПРОПИСАТЬ ЛОГИРОВАНИЕ!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def get_analysis_increased_cashback(transactions: list[dict], month: str, year: str) -> list[dict]:
-    """Получаем список транзакций, месяц, год, по которым выводим
-            список транзакций с кэшбэком."""
+    """Получаем список транзакций за период входных данных месяц, год,
+    по которым выводим список транзакций с кэшбэком."""
 
     # Приводим входные данные по дате в формат datetime с целью последующего сравнения.
     date_addition = month + '.' + year
@@ -19,6 +35,14 @@ def get_analysis_increased_cashback(transactions: list[dict], month: str, year: 
                 and '-' not in str(transaction["Кэшбэк"])):
             list_cashback_tranansactions.append(transaction)
     return list_cashback_tranansactions
+
+
+
+
+
+
+# from transactions import transactions
+# Это для проверки УДАЛИТЬ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 def get_categories_cashback(transactions):
