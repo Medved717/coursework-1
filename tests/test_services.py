@@ -1,7 +1,8 @@
 import pytest
 from unittest.mock import Mock, patch
+import json
 
-from src.services import get_analysis_increased_cashback
+from src.services import get_analysis_increased_cashback, get_categories_cashback
 
 
 @pytest.mark.parametrize(
@@ -23,4 +24,20 @@ def test_get_analysis_increased_cashback(before_transactions, after_transactions
     с периодом входных данных по дате."""
 
     result = get_analysis_increased_cashback(before_transactions, '05', '2019')
+    assert result == after_transactions
+
+@pytest.mark.parametrize(
+    'before_transactions, after_transactions', [
+        ([{"Категория": "Перевод", "Кэшбэк": 3000},
+          {"Категория": "Магазин", "Кэшбэк": 3000},
+          {"Категория": "Перевод", "Кэшбэк": 3000},
+          {"Категория": "Магазин", "Кэшбэк": 3000},
+          {"Нет категории": "Иное значение", "Сумма операции": 3000}],
+
+         json.dumps([{"Перевод": 6000.0},
+          {"Магазин": 6000.0}], ensure_ascii=False))
+    ]
+)
+def test_get_categories_cashback(before_transactions, after_transactions):
+    result = get_categories_cashback(before_transactions)
     assert result == after_transactions

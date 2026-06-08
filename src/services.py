@@ -51,8 +51,9 @@ def get_categories_cashback(transactions):
 
     list_transactions = []
     for transaction in transactions:
-        categories_cashback = {transaction["Категория"]: transaction["Кэшбэк"]}
-        list_transactions.append(categories_cashback)
+        if transaction.get("Категория") and transaction.get("Кэшбэк") != None:
+            categories_cashback = {transaction["Категория"]: transaction["Кэшбэк"]}
+            list_transactions.append(categories_cashback)
 
     dict_categories = {}
     for category in list_transactions:
