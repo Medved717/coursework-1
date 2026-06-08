@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 from idlelib.pyparse import trans
 # from src.read_file import get_transactions_excel
-from src.search import transactions
+from src.transactions import transactions
 import pandas as pd
 import os
 import openpyxl
@@ -10,6 +10,23 @@ import json
 from os import write
 import requests
 import os
+
+
+
+
+
+
+
+# ПРОПИСАТЬ ЛОГИРОВАНИЕ!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
+
+
+
+
+
+
 
 
 def get_time():
@@ -81,15 +98,15 @@ def payment_amount(transactions: list[dict]) -> list[dict]:
 
 
 def cashback(transactions: list[dict]) -> list[dict]:
-    """Принимает список словарей (транзакций) высчитывает кешбек
-    и возвращает список словарей с кешбеком"""
+    """Принимает список словарей (транзакций) высчитывает кэшбэк
+    и возвращает список словарей с кэшбэком"""
 
     for transaction in transactions:
         summ_cashback = transaction.get('Сумма операции') * 0.01
-        if not summ_cashback:
-            transaction['Кэшбэк'] = summ_cashback
+        if float(transaction['Сумма операции']) < 0:
+            transaction['Кэшбэк'] = abs(summ_cashback)
         else:
-            transaction['Кэшбэк'] = 0
+            transaction['Кэшбэк'] = '0'
     return transactions
 
 
@@ -101,8 +118,6 @@ def get_transactions_excel():
     file_no_nan = read_file_excel.where(pd.notna(read_file_excel), "")
     exel_file_to_dict = file_no_nan.to_dict("records")
     return exel_file_to_dict
-
-print(get_transactions_excel())
 
 
 def get_csv_stocks() -> list[dict]:
