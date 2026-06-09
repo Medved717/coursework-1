@@ -127,7 +127,8 @@ def get_csv_stocks() -> list[dict]:
     file_path_csv = os.path.join('..', 'data', 'list_stocks.csv')
     file_csv_read = pd.read_csv(file_path_csv)
     file_to_dict = file_csv_read.to_dict('records')
-    result_list_stocks = [{'stock': x['symbol'], 'price': x['price']} for x in file_to_dict if x['symbol'] in ['AAPL', 'AMZN', 'GOOGL', 'MSFT', 'TSLA']]
+    result_list_stocks = [{'stock': x['symbol'], 'price': x['price']} for x in file_to_dict if x['symbol']
+                          in ['AAPL', 'AMZN', 'GOOGL', 'MSFT', 'TSLA']]
     return result_list_stocks
 
 
