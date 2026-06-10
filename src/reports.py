@@ -4,9 +4,24 @@ from idlelib.pyparse import trans
 
 import pandas as pd
 import os
+
 from dateutil.relativedelta import relativedelta
 
+
+
+# Используется для тестов, удалить!!!!!!!!!!!!!!!!!!!!!
 from src.transactions import transactions
+
+
+
+# Прописать ЛОГИРОАВНИЕ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
+
+
+
+
 
 
 def get_transactions_in_excel_file():
@@ -40,9 +55,10 @@ def spending_by_category(transactions: pd.DataFrame, category: str,
         (transactions['Дата операции'] >= date_start) &
         (transactions['Дата операции'] <= date_end)
     ]
-    return filter_transactions[['Категория', 'Дата операции']]
+    return filter_transactions
 
 
-
+# result = spending_by_category(get_transactions_in_excel_file(),  category='Связь', date='22.02.2018 22:55:12')
+# print(result)
 
 
