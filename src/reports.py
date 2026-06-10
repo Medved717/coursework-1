@@ -17,6 +17,24 @@ from src.transactions import transactions
 # Прописать ЛОГИРОАВНИЕ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
+def reports_file(func):
+    def wrapper(*args, **kwargs):
+        result_func = func(*args, **kwargs)
+        result_func = result_func.to_dict(orient='records')
+        datetime_str_list_transactions = []
+        for transaction in result_func:
+            for key, value in transaction.items():
+                if key == 'Дата операции':
+                    value = datetime.strftime(value, '%d.%m.%Y %H:%M:%S')
+                    transaction[key] = value
+            datetime_str_list_transactions.append(transaction)
+
+        file_path = os.path.join('..', 'data', 'result_reports.json')
+        with open(file_path, 'w', encoding='utf-8') as f:
+            json.dump(datetime_str_list_transactions, f, ensure_ascii=False)
+        return datetime_str_list_transactions
+    return wrapper
+
 
 
 
@@ -32,6 +50,7 @@ def get_transactions_in_excel_file():
     return data_frame_transactions
 
 
+@reports_file
 def spending_by_category(transactions: pd.DataFrame, category: str,
                          date: Optional[str] = None) -> pd.DataFrame:
     """Функция возвращает траты по заданной категории за последние три месяца (от переданной даты),
@@ -58,7 +77,9 @@ def spending_by_category(transactions: pd.DataFrame, category: str,
     return filter_transactions
 
 
-# result = spending_by_category(get_transactions_in_excel_file(),  category='Связь', date='22.02.2018 22:55:12')
-# print(result)
+
+# Это проверка, удалить!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+result = spending_by_category(get_transactions_in_excel_file(),  category='Связь', date='22.02.2018 22:55:12')
+print(result)
 
 

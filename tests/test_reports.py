@@ -34,3 +34,4 @@ def test_spending_by_category(transactions_before, transactions_after):
                                   date='15.07.2018 16:49:53', category='Связь')
     assert (result[['Категория']].to_dict() ==
             transactions_after[['Категория']].to_dict())
+
