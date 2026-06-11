@@ -9,12 +9,6 @@ import os
 from dateutil.relativedelta import relativedelta
 
 
-
-# Используется для тестов, удалить!!!!!!!!!!!!!!!!!!!!!
-from src.transactions import transactions
-
-
-
 directori_path_logs = os.path.join('..', 'logs', 'log_reports.txt')
 
 logger = logging.getLogger('reports')

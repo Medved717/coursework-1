@@ -2,8 +2,6 @@ import logging
 import os
 from datetime import datetime
 from idlelib.pyparse import trans
-# from src.read_file import get_transactions_excel
-from src.transactions import transactions
 import pandas as pd
 import os
 import openpyxl
@@ -13,7 +11,7 @@ import requests
 import os
 
 
-file_path_log_file = os.path.join('..', 'logs', 'log_views.txt')
+file_path_log_file = os.path.join('logs', 'log_views.txt')
 
 logger = logging.getLogger('views')
 file_handler = logging.FileHandler(file_path_log_file, mode='w', encoding='utf-8')
@@ -51,8 +49,47 @@ def greeting_users(date: str) -> str:
         return f'Доброй ночи!'
 
 
+def get_transactions_excel():
+    """Получение файла транзакций в формате excel и перевод в список словарей."""
+
+    file_path = os.path.join("data", "operations.xlsx")
+    read_file_excel = pd.read_excel(file_path)
+    file_no_nan = read_file_excel.where(pd.notna(read_file_excel), "")
+    exel_file_to_dict = file_no_nan.to_dict("records")
+    logger.info(f'Получен файл транзакций в формате excel и переведен в список словарей в функции \n'
+                f'get_transactions_excel')
+    return exel_file_to_dict
+
+
+def mask_card(transactions: list[dict]) -> list[dict]:
+    """На вход передается список словарей с транзакциями, в том числе
+    с номерами карт, после чего происходит маскировка"""
+    transaction_result = []
+    for transaction in transactions:
+        number_card = transaction['Номер карты']
+        cut_number_card = number_card[-4:]
+        transaction['Номер карты'] = cut_number_card
+        transaction_result.append(transaction)
+    logger.info(f'Получена маскировка карт в списке словарей с транзакциями в функции mask_card.')
+    return transaction_result
+
+
+def cashback(transactions: list[dict]) -> list[dict]:
+    """Принимает список словарей (транзакций) высчитывает кэшбэк
+    и возвращает список словарей с кэшбэком"""
+
+    for transaction in transactions:
+        summ_cashback = transaction.get('Сумма операции') * 0.01
+        if float(transaction['Сумма операции']) < 0:
+            transaction['Кэшбэк'] = round(abs(summ_cashback), 2)
+        else:
+            transaction['Кэшбэк'] = '0'
+    logger.info(f'Посчитан кэшбек в списке транзакций в функции cashback.')
+    return transactions
+
+
 def get_result_list_transaction_by_date(transactions: list[dict], input_date: str) -> list[dict]:
-    """Прием даты и формирование списка словарей
+    """Прием даты и формирование списка словарей (транзакций)
     с начала месяца по полученной дате в формате от меньшей даты к большей."""
 
     # Приводим введенную дату в объект datetime.
@@ -72,19 +109,6 @@ def get_result_list_transaction_by_date(transactions: list[dict], input_date: st
     return sorted(list_transactions, key=lambda  x: x['Дата операции'],   reverse=False)
 
 
-def mask_card(transactions: list[dict]) -> list[dict]:
-    """На вход передается список словарей с транзакциями, в том числе
-    с номерами карт, после чего происходит маскировка"""
-    transaction_result = []
-    for transaction in transactions:
-        number_card = transaction['Номер карты']
-        cut_number_card = number_card[-4:]
-        transaction['Номер карты'] = cut_number_card
-        transaction_result.append(transaction)
-    logger.info(f'Получена маскировка карт в списке словарей с транзакциями в функции mask_card.')
-    return transaction_result
-
-
 def total_expenses(transactions: list[dict]) -> list:
     """Получает список словарей с транзакциями
     и возвращает объединенную сумму расходов или
@@ -99,32 +123,6 @@ def payment_amount(transactions: list[dict]) -> list[dict]:
 
     sorted_transaction = sorted(transactions, key=lambda x: x.get('Сумма платежа'), reverse=True)
     return sorted_transaction[:5]
-
-
-def cashback(transactions: list[dict]) -> list[dict]:
-    """Принимает список словарей (транзакций) высчитывает кэшбэк
-    и возвращает список словарей с кэшбэком"""
-
-    for transaction in transactions:
-        summ_cashback = transaction.get('Сумма операции') * 0.01
-        if float(transaction['Сумма операции']) < 0:
-            transaction['Кэшбэк'] = abs(summ_cashback)
-        else:
-            transaction['Кэшбэк'] = '0'
-    logger.info(f'Посчитан кэшбек в списке транзакций в функции cashback.')
-    return transactions
-
-
-def get_transactions_excel():
-    """Получение файла транзакций в формате excel и перевод в список словарей."""
-
-    file_path = os.path.join("..", "data", "operations.xlsx")
-    read_file_excel = pd.read_excel(file_path)
-    file_no_nan = read_file_excel.where(pd.notna(read_file_excel), "")
-    exel_file_to_dict = file_no_nan.to_dict("records")
-    logger.info(f'Получен файл транзакций в формате excel и переведен в список словарей в функции \n'
-                f'get_transactions_excel')
-    return exel_file_to_dict
 
 
 def get_csv_stocks() -> list[dict]:
