@@ -1,3 +1,4 @@
+import logging
 import os
 from datetime import datetime
 from idlelib.pyparse import trans
@@ -12,20 +13,14 @@ import requests
 import os
 
 
+file_path_log_file = os.path.join('..', 'logs', 'log_views.txt')
 
-
-
-
-
-# ПРОПИСАТЬ ЛОГИРОВАНИЕ!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-
-
-
-
-
-
+logger = logging.getLogger('views')
+file_handler = logging.FileHandler(file_path_log_file, mode='w', encoding='utf-8')
+file_formatter = logging.Formatter('%(asctime)s, %(levelname)s: %(message)s')
+file_handler.setFormatter(file_formatter)
+logger.addHandler(file_handler)
+logger.setLevel(logging.DEBUG)
 
 
 
@@ -35,6 +30,7 @@ def get_time():
 
     datetime_now = datetime.now()
     data_str = datetime_now.strftime('%Y-%m-%d %H:%M:%S')
+    logger.info(f'Получена дата в функции get_time.')
     return data_str
 
 
@@ -42,12 +38,16 @@ def greeting_users(date: str) -> str:
     """Приветствие в зависимости от времени обращения."""
 
     if 5 <= int(date[11:13]) <= 11:
+        logger.debug(f'Получено приветствие.')
         return f'Доброе утро!'
     elif 12 <= int(date[11:13]) <= 15:
+        logger.debug(f'Получено приветствие.')
         return f'Добрый день!'
     elif 16 <= int(date[11:13]) <= 21:
+        logger.debug(f'Получено приветствие.')
         return f'Добрый вечер!'
     else:
+        logger.debug(f'Получено приветствие.')
         return f'Доброй ночи!'
 
 
@@ -59,6 +59,7 @@ def get_result_list_transaction_by_date(transactions: list[dict], input_date: st
     datetime_input = datetime.strptime(input_date, '%d.%m.%Y %H:%M:%S')
     # Откатываем введенную дату на начало месяца.
     datetime_beginning_of_the_month = datetime_input.replace(day=1, hour=0, minute=0, second=0)
+    logger.debug(f'Получена начальния дата в функции get_result_list_transaction_by_date.')
 
     # Формируем условие, при котором транзации формируются исходя из периода дат.
     list_transactions = []
@@ -66,6 +67,8 @@ def get_result_list_transaction_by_date(transactions: list[dict], input_date: st
         transaction_obj_date = datetime.strptime(transaction['Дата операции'],'%d.%m.%Y %H:%M:%S')
         if datetime_beginning_of_the_month <= transaction_obj_date <= datetime_input:
             list_transactions.append(transaction)
+    logger.info(f'Получен список словарей с начала месяца по полученной дате в формате от меньшей даты к большей\n'
+                f'в функции get_result_list_transaction_by_date.')
     return sorted(list_transactions, key=lambda  x: x['Дата операции'],   reverse=False)
 
 
@@ -78,6 +81,7 @@ def mask_card(transactions: list[dict]) -> list[dict]:
         cut_number_card = number_card[-4:]
         transaction['Номер карты'] = cut_number_card
         transaction_result.append(transaction)
+    logger.info(f'Получена маскировка карт в списке словарей с транзакциями в функции mask_card.')
     return transaction_result
 
 
@@ -107,6 +111,7 @@ def cashback(transactions: list[dict]) -> list[dict]:
             transaction['Кэшбэк'] = abs(summ_cashback)
         else:
             transaction['Кэшбэк'] = '0'
+    logger.info(f'Посчитан кэшбек в списке транзакций в функции cashback.')
     return transactions
 
 
@@ -117,6 +122,8 @@ def get_transactions_excel():
     read_file_excel = pd.read_excel(file_path)
     file_no_nan = read_file_excel.where(pd.notna(read_file_excel), "")
     exel_file_to_dict = file_no_nan.to_dict("records")
+    logger.info(f'Получен файл транзакций в формате excel и переведен в список словарей в функции \n'
+                f'get_transactions_excel')
     return exel_file_to_dict
 
 
@@ -129,6 +136,8 @@ def get_csv_stocks() -> list[dict]:
     file_to_dict = file_csv_read.to_dict('records')
     result_list_stocks = [{'stock': x['symbol'], 'price': x['price']} for x in file_to_dict if x['symbol']
                           in ['AAPL', 'AMZN', 'GOOGL', 'MSFT', 'TSLA']]
+    logger.info(f'Преобразован файл csv в объект пайтон (словарь) и выведены необходимые словари \n'
+                f' с наименованием компании и стоимостью акции. в функции get_csv_stocks')
     return result_list_stocks
 
 
@@ -154,19 +163,22 @@ def get_exchange_rate():
             {"currency": "EUR", "rate": eur_rate}
             ]
         }
+        logger.info(f'Осуществлен Прием данных по курсу валют формата json, осуществлен \n'
+                    f'вывод словаря с данными о курсе валют "EUR" и "USD". в функции get_exchange_rate.')
         return result
 
     except requests.exceptions.RequestException:
         print('Не удалось выполнить запрос к серверу, попробуйте обратиться позже.')
+        logger.error(f'Ошибка к запросу сервера в функции get_exchange_rate')
         return 0.0
 
 
-# Здесь будет функция по приему курсов акций.
 def get_stocks():
     """Получение csv - файла со списком реализуемых акций и их стоимостями."""
 
     url = 'https://raw.githubusercontent.com/Ate329/top-us-stock-tickers/main/tickers/sp500.csv'
     response = requests.get(url)
+    logger.info(f'Получен csv - файл со списком реализуемых акций и их стоимостями в функции get_stocks.')
     return response
 
 
@@ -177,6 +189,7 @@ def file_csv_stocks():
     path_file_csv = os.path.join('..', 'data', 'list_stocks.csv')
     with open(path_file_csv, 'w', encoding='utf-8') as f:
         f.write(result_get_stocks.text)
+        logger.info(f'Данные по акциям сохранены (file_csv_stocks).')
     return None
 
 
