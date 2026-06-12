@@ -9,7 +9,7 @@ import os
 from dateutil.relativedelta import relativedelta
 
 
-directori_path_logs = os.path.join('..', 'logs', 'log_reports.txt')
+directori_path_logs = os.path.join('logs', 'log_reports.txt')
 
 logger = logging.getLogger('reports')
 file_handler = logging.FileHandler(directori_path_logs, mode='w', encoding='utf-8')
@@ -32,7 +32,7 @@ def save_file_dataframe_func(func):
             else:
                 result.append(transaction)
 
-        file_path = os.path.join('..', 'data', 'example.json')
+        file_path = os.path.join('data', 'category_pay.json')
         with open(file_path, 'w', encoding='utf-8') as f:
             json.dump(result, f, ensure_ascii=False)
         return result
@@ -43,7 +43,7 @@ def save_file_dataframe_func(func):
 def get_transactions_in_excel_file():
     """Получаем данные из файла формата excel и переводим в формат DataFrame."""
 
-    file_path_exel = os.path.join('..', 'data', 'operations.xlsx')
+    file_path_exel = os.path.join('data', 'operations.xlsx')
     data_frame_transactions = pd.read_excel(file_path_exel)
     logger.info(f'Получены данные в формате DataFrame из файла operations.xlsx.')
     return data_frame_transactions
@@ -62,8 +62,8 @@ def spending_by_category(transactions: pd.DataFrame, category: str,
     else:
         date_end = datetime.strptime(date, '%d.%m.%Y %H:%M:%S')
 
-    # Задаем первоначальную дату поиска с разницой в 3 месяца.
-    date_start = datetime.strftime(date_end - relativedelta(months=3), '%d.%m.%Y %H:%M:%S')
+    # Задаем первоначальную дату поиска с разницей в 3 месяца.
+    date_start = date_end - relativedelta(months=3)
 
 
     # Переводим столбец "Дата операции" в формат datetime для последующего получения периода.
@@ -74,8 +74,13 @@ def spending_by_category(transactions: pd.DataFrame, category: str,
         (transactions['Дата операции'] >= date_start) &
         (transactions['Дата операции'] <= date_end)
     ]
-    logger.info(f'Получена дата, так как не введена исходная в spending_by_category.')
-    return filter_transactions
+    if filter_transactions.empty:
+        logger.info(f'Данные не найдены!')
+        print('Данная категория отсутствует в указанном периоде!')
+        return filter_transactions
+    else:
+        return filter_transactions
+
 
 
 

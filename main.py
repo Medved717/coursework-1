@@ -1,4 +1,5 @@
-from src.services import get_analysis_increased_cashback
+from src.reports import get_transactions_in_excel_file, spending_by_category
+from src.services import get_analysis_increased_cashback, get_categories_cashback
 from src.views import get_time, greeting_users, get_result_list_transaction_by_date, get_transactions_excel, mask_card, \
     cashback, total_expenses, payment_amount, get_csv_stocks, get_stocks, get_exchange_rate, file_csv_stocks
 
@@ -33,48 +34,24 @@ if __name__ == '__main__':
             list_transaction_start_month = None
             break
 
+    # Gолучаем транзакции с учетом кэшбека за 3 месяца.
+    print('Программа: Хотите получить транзакции с учетом кэшбека за 3 месяца?')
+    while True:
+        input_answer = input('Программа: Введите ответ: да или нет.').lower()
+        if input_answer == 'да':
+            while True:
+                input_month = input('Программа: Введите месяц в формете "ММ".')
+                break
+            while True:
+                input_year = input('Программа: Введите год в формете "YYYY".')
+                break
+            analysis_cashback = get_analysis_increased_cashback(transactions, str(input_month), str(input_year))
+            result_cashback = get_categories_cashback(analysis_cashback)
+            break
+        elif input_answer == 'да':
+            analysis_cashback = None
 
-
-
-
-
-
-
-
-
-
-
-    # Прописать еще вторую функцию из модуля cervices!!!!!!!!!!!
-
-
-    # print('Программа: Хотите получить транзакции с учетом кэшбека за 3 месяца?')
-    # while True:
-    #     input_answеr = input('Программа: Введите ответ: да или нет.').lower()
-    #     if input_answеr == 'да':
-    #         while True:
-    #             input_month = input('Программа: Введите месяц в формете "ММ".')
-    #             break
-    #         while True:
-    #             input_year = input('Программа: Введите год в формете "YYYY".')
-    #             break
-    #         analysis_cashback = get_analysis_increased_cashback(transactions, str(input_month), str(input_year))
-    #         break
-    #     elif input_answеr == 'да':
-    #         analysis_cashback = None
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    # Получаем сведения по общим расходам за период.
     print('Хотите получить общую сумму расходов или доходов за указанный период?')
     while True:
         get_ansver = input('Программа: Введите ответ: да или нет.').lower()
@@ -85,7 +62,6 @@ if __name__ == '__main__':
         elif get_ansver == 'нет':
             transactions_expenses = None
             break
-
 
     # """Ведется подсчет топ-5 транзакций по сумме платежа (от самых больших и в обратном порядке)."""
     print('Программа: Хотите получить подсчет топ-5 транзакций по сумме платежа (от самых больших и в обратном порядке)?')
@@ -136,15 +112,42 @@ if __name__ == '__main__':
             exchange_rate = None
             break
 
-# Выводим результаты модуля views.
-print(f'Получены следующие сведения.\n'
-      f' Список транзакций с начала искомого месяца: \n'
-      f'{list_transaction_start_month} \n'
-      # f'Транзакции за 3 месяца:\n'
-      # f'{analysis_cashback}\n'
-      f'Сумма прибыли / расходов: \n'
-      f'{transactions_expenses}\n'
-      f'Топ-5 транзакций по сумме платежа:\n'
-      f'{result_payment_amount} \n'
-      f'Сведения об акциях \n'
-      f'{list_stocks}.')
+    # Получаем список транзакций и выводим сведения о тратах по категориям за последние 3 месяца.
+    print('Программа: Желаете получить сведения о тратах по категории за последние 3 месяца?')
+    while True:
+        input_result = input('Программа: Введите ответ: да или нет.').lower()
+        if input_result == 'да':
+            transactions_excel = get_transactions_in_excel_file()
+            while True:
+                input_result_category = input('Программа: Введите искомую категорию c заглавной буквы.')
+                category = str(input_result_category)
+                break
+            while True:
+                input_result_date = input('Программа: Введите искомую дату в формате ДД.ММ.ГГГГ ЧЧ:MM:CC.')
+                date = str(input_result_date)
+                break
+            get_spending_by_category = spending_by_category(transactions_excel, category, date)
+            break
+        elif input_answer == 'нет':
+            get_spending_by_category = None
+            break
+
+    # Выводим результаты модуля views.
+    print(f'Получены следующие сведения.\n'
+          f' Список транзакций с начала искомого месяца: \n'
+          f'{list_transaction_start_month} \n'
+          f'Кэшбек за 3 месяца:\n'
+          f'{result_cashback}\n'
+          f'Сумма прибыли / расходов: \n'
+          f'{transactions_expenses}\n'
+          f'Топ-5 транзакций по сумме платежа:\n'
+          f'{result_payment_amount} \n'
+          f'Сведения об акциях \n'
+          f'{list_stocks}.')
+
+    if get_spending_by_category:
+        print(f'Расходы по категории за 3 месяца:\n'
+              f'{get_spending_by_category}')
+    else:
+        print('Расходы по категории за 3 месяца:\n'
+              'Данная категория отсутствует в указанном периоде!')

@@ -168,8 +168,7 @@ def get_exchange_rate():
 
         # Запись серверных данных в файл формата json
         # для выведения результата в случае отсутствия интернет соединения.
-        file_json_path = os.path.join(
-            'data', 'exchange_rate.json')
+        file_json_path = os.path.join('data', 'exchange_rate.json')
         with open(file_json_path, 'w', encoding='utf-8') as f:
             json.dump(file_dict, f, ensure_ascii=False, indent=4)
 
