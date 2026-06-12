@@ -125,11 +125,20 @@ def payment_amount(transactions: list[dict]) -> list[dict]:
     return sorted_transaction[:5]
 
 
+def get_stocks():
+    """Получение csv - файла со списком реализуемых акций и их стоимостями."""
+
+    url = 'https://raw.githubusercontent.com/Ate329/top-us-stock-tickers/main/tickers/sp500.csv'
+    response = requests.get(url)
+    logger.info(f'Получен csv - файл со списком реализуемых акций и их стоимостями в функции get_stocks.')
+    return response
+
+
 def get_csv_stocks() -> list[dict]:
     """Преобразование файла csv в объект пайтон (словарь) и выводит
     необходимые словари с наименованием компании и стоимостью акции."""
 
-    file_path_csv = os.path.join('..', 'data', 'list_stocks.csv')
+    file_path_csv = os.path.join('data', 'list_stocks.csv')
     file_csv_read = pd.read_csv(file_path_csv)
     file_to_dict = file_csv_read.to_dict('records')
     result_list_stocks = [{'stock': x['symbol'], 'price': x['price']} for x in file_to_dict if x['symbol']
@@ -137,6 +146,17 @@ def get_csv_stocks() -> list[dict]:
     logger.info(f'Преобразован файл csv в объект пайтон (словарь) и выведены необходимые словари \n'
                 f' с наименованием компании и стоимостью акции. в функции get_csv_stocks')
     return result_list_stocks
+
+
+def file_csv_stocks():
+    """Сохраняем полученные данные по акциям в csv файл."""
+
+    result_get_stocks = get_stocks()
+    path_file_csv = os.path.join('data', 'list_stocks.csv')
+    with open(path_file_csv, 'w', encoding='utf-8') as f:
+        f.write(result_get_stocks.text)
+        logger.info(f'Данные по акциям сохранены (file_csv_stocks).')
+    return None
 
 
 def get_exchange_rate():
@@ -148,7 +168,8 @@ def get_exchange_rate():
 
         # Запись серверных данных в файл формата json
         # для выведения результата в случае отсутствия интернет соединения.
-        file_json_path = os.path.join('..', 'data', 'exchange_rate.json')
+        file_json_path = os.path.join(
+            'data', 'exchange_rate.json')
         with open(file_json_path, 'w', encoding='utf-8') as f:
             json.dump(file_dict, f, ensure_ascii=False, indent=4)
 
@@ -169,30 +190,3 @@ def get_exchange_rate():
         print('Не удалось выполнить запрос к серверу, попробуйте обратиться позже.')
         logger.error(f'Ошибка к запросу сервера в функции get_exchange_rate')
         return 0.0
-
-
-def get_stocks():
-    """Получение csv - файла со списком реализуемых акций и их стоимостями."""
-
-    url = 'https://raw.githubusercontent.com/Ate329/top-us-stock-tickers/main/tickers/sp500.csv'
-    response = requests.get(url)
-    logger.info(f'Получен csv - файл со списком реализуемых акций и их стоимостями в функции get_stocks.')
-    return response
-
-
-def file_csv_stocks():
-    """Сохраняем полученные данные по акциям в csv файл."""
-
-    result_get_stocks = get_stocks()
-    path_file_csv = os.path.join('..', 'data', 'list_stocks.csv')
-    with open(path_file_csv, 'w', encoding='utf-8') as f:
-        f.write(result_get_stocks.text)
-        logger.info(f'Данные по акциям сохранены (file_csv_stocks).')
-    return None
-
-
-
-
-
-
-

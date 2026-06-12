@@ -4,7 +4,7 @@ import logging
 import os
 
 
-file_path_log_file = os.path.join('..', 'logs', 'log_services.txt')
+file_path_log_file = os.path.join('logs', 'log_services.txt')
 
 logger = logging.getLogger('services')
 file_handler = logging.FileHandler(file_path_log_file, mode='w', encoding='utf-8')
@@ -46,7 +46,7 @@ def get_categories_cashback(transactions):
         if transaction.get("Категория") and transaction.get("Кэшбэк") != None:
             categories_cashback = {transaction["Категория"]: transaction["Кэшбэк"]}
             list_transactions.append(categories_cashback)
-            logger.debug(f'Пройдено условаие по категориям и кэшбэку в функции get_categories_cashback.')
+            logger.debug(f'Пройдено условие по категориям и кэшбэку в функции get_categories_cashback.')
 
     dict_categories = {}
     for category in list_transactions:
