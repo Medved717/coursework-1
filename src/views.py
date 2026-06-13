@@ -10,8 +10,8 @@ from os import write
 import requests
 import os
 
-
-file_path_log_file = os.path.join('logs', 'log_views.txt')
+file_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+file_path_log_file = os.path.join(file_path, 'logs', 'log_views.txt')
 
 logger = logging.getLogger('views')
 file_handler = logging.FileHandler(file_path_log_file, mode='w', encoding='utf-8')
@@ -152,7 +152,8 @@ def file_csv_stocks():
     """Сохраняем полученные данные по акциям в csv файл."""
 
     result_get_stocks = get_stocks()
-    path_file_csv = os.path.join('data', 'list_stocks.csv')
+    file_path_csv_stocks = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    path_file_csv = os.path.join(file_path_csv_stocks, 'data', 'list_stocks.csv')
     with open(path_file_csv, 'w', encoding='utf-8') as f:
         f.write(result_get_stocks.text)
         logger.info(f'Данные по акциям сохранены (file_csv_stocks).')
@@ -168,7 +169,8 @@ def get_exchange_rate():
 
         # Запись серверных данных в файл формата json
         # для выведения результата в случае отсутствия интернет соединения.
-        file_json_path = os.path.join('data', 'exchange_rate.json')
+        file_path_json_stocks = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        file_json_path = os.path.join(file_path_json_stocks, 'data', 'exchange_rate.json')
         with open(file_json_path, 'w', encoding='utf-8') as f:
             json.dump(file_dict, f, ensure_ascii=False, indent=4)
 

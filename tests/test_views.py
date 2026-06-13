@@ -72,7 +72,7 @@ def test_get_stocks(mock_get):
     result = get_stocks()
     mock_get.assert_called_once()
 
-
+# ПроверитЬ!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 @patch("src.views.os.path.join")
 def test_file_csv_stocks(mock_join):
     """Проверка использования пути сохранения."""

@@ -8,8 +8,8 @@ import os
 
 from dateutil.relativedelta import relativedelta
 
-
-directori_path_logs = os.path.join('logs', 'log_reports.txt')
+file_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+directori_path_logs = os.path.join(file_path, 'logs', 'log_reports.txt')
 
 logger = logging.getLogger('reports')
 file_handler = logging.FileHandler(directori_path_logs, mode='w', encoding='utf-8')

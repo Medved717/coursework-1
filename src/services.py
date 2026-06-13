@@ -3,8 +3,8 @@ from datetime import datetime
 import logging
 import os
 
-
-file_path_log_file = os.path.join('logs', 'log_services.txt')
+file_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+file_path_log_file = os.path.join(file_path, 'logs', 'log_services.txt')
 
 logger = logging.getLogger('services')
 file_handler = logging.FileHandler(file_path_log_file, mode='w', encoding='utf-8')
