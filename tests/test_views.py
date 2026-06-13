@@ -1,7 +1,6 @@
 import datetime
 import os
-from msvcrt import putch
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import Mock, mock_open, patch
 
 import pytest
 import requests
@@ -69,16 +68,22 @@ def test_get_stocks(mock_get):
     fake_response = Mock()
     fake_response.text = "Вернулся текст."
     mock_get.return_value = fake_response
-    result = get_stocks()
+    get_stocks()
     mock_get.assert_called_once()
 
-# ПроверитЬ!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+@patch("src.views.get_stocks")
+@patch("src.views.open", new_callable=mock_open)
 @patch("src.views.os.path.join")
-def test_file_csv_stocks(mock_join):
+def test_file_csv_stocks(mock_join, fake_response, mock_get_stocks):
     """Проверка использования пути сохранения."""
 
+    mock_get_stocks.return_value.txt = "Текст из интернета."
+    mock_join.return_value = "Строка пути!"
+    fake_response.return_value.txt = "Фальшивое сохранение."
     file_csv_stocks()
-    mock_join.assert_called_once_with("..", "data", "list_stocks.csv")
+    file_path_csv_stocks = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    mock_join.assert_called_once_with(file_path_csv_stocks, "data", "list_stocks.csv")
 
 
 @patch("src.views.pd.read_excel")
