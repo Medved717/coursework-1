@@ -56,24 +56,17 @@ def get_transactions_in_excel_file():
 
 @save_file_dataframe_func
 def spending_by_category(
-    transactions: pd.DataFrame, category: str, date: Optional[str] = None
+        transactions: pd.DataFrame, category: str, date: Optional[str] = None
 ) -> pd.DataFrame:
-    """Функция возвращает траты по заданной категории за последние три месяца (от переданной даты),
-    если дата не передана, то берется текущая дата."""
+    """Функция возвращает сумму трат по заданной категории за последние три месяца"""
 
-    # Получаем на входе дату или текущую дату в случае отсутствия на входе.
     if date is None:
         date_end = datetime.now()
-        logger.debug(
-            "Получена дата, так как не введена исходная в spending_by_category."
-        )
     else:
         date_end = datetime.strptime(date, "%d.%m.%Y %H:%M:%S")
 
-    # Задаем первоначальную дату поиска с разницей в 3 месяца.
     date_start = date_end - relativedelta(months=3)
 
-    # Переводим столбец "Дата операции" в формат datetime для последующего получения периода.
     transactions["Дата операции"] = pd.to_datetime(
         transactions["Дата операции"], format="%d.%m.%Y %H:%M:%S"
     )
@@ -82,10 +75,22 @@ def spending_by_category(
         (transactions["Категория"] == category)
         & (transactions["Дата операции"] >= date_start)
         & (transactions["Дата операции"] <= date_end)
-    ]
+        ]
+
     if filter_transactions.empty:
         logger.info("Данные не найдены!")
         print("Данная категория отсутствует в указанном периоде!")
-        return filter_transactions
+        # Возвращаем пустой DataFrame с нужными колонками
+        return pd.DataFrame(columns=["Категория", "Сумма трат за 3 месяца"])
     else:
-        return filter_transactions
+        # Суммируем траты по категории
+        total_sum = abs(filter_transactions["Сумма операции"].sum())
+
+        # Создаем DataFrame с результатом
+        result_df = pd.DataFrame([{
+            "Категория": category,
+            "Сумма трат за 3 месяца": round(total_sum, 2)
+        }])
+
+        logger.info(f"Сумма трат по категории '{category}': {round(total_sum, 2)}")
+        return result_df

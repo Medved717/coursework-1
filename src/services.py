@@ -49,7 +49,7 @@ def get_categories_cashback(transactions):
 
     list_transactions = []
     for transaction in transactions:
-        if transaction.get("Категория") and transaction.get("Кэшбэк") is None:
+        if transaction.get("Категория") and transaction.get("Кэшбэк") not in [None, "", "0", 0]:
             categories_cashback = {transaction["Категория"]: transaction["Кэшбэк"]}
             list_transactions.append(categories_cashback)
             logger.debug(

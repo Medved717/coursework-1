@@ -88,8 +88,7 @@ def cashback(transactions: list[dict]) -> list[dict]:
 
 
 def get_result_list_transaction_by_date(
-    transactions: list[dict], input_date: str
-) -> list[dict]:
+    transactions: list[dict], input_date: str) -> list[dict]:
     """Прием даты и формирование списка словарей (транзакций)
     с начала месяца по полученной дате в формате от меньшей даты к большей."""
 
@@ -148,10 +147,11 @@ def get_stocks():
 
 
 def get_csv_stocks() -> list[dict]:
-    """Преобразование файла csv в объект пайтон (словарь) и выводит
+    """Преобразование файла csv в объект python (словарь) и выводит
     необходимые словари с наименованием компании и стоимостью акции."""
 
-    file_path_csv = os.path.join("data", "list_stocks.csv")
+    file_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    file_path_csv = os.path.join(file_path, "data", "list_stocks.csv")
     file_csv_read = pd.read_csv(file_path_csv)
     file_to_dict = file_csv_read.to_dict("records")
     result_list_stocks = [
@@ -181,6 +181,7 @@ def file_csv_stocks():
 def get_exchange_rate():
     """Прием данных по курсу валют формата json
     далее запись json-файла и вывод словаря с данными о курсе валют 'EUR' и 'USD'."""
+
     try:
         response = requests.get("https://www.cbr-xml-daily.ru/daily_json.js")
         file_dict = response.json()
@@ -216,3 +217,29 @@ def get_exchange_rate():
         print("Не удалось выполнить запрос к серверу, попробуйте обратиться позже.")
         logger.error("Ошибка к запросу сервера в функции get_exchange_rate")
         return 0.0
+
+
+def get_currencies_and_stocks(stocks: list[dict], currencies: dict) -> dict:
+    '''Получение списка словарей с акциями и их стоимостями,
+    а также словаря со списком валют и их стоимости'''
+
+    currencies_list = currencies.get("currency_rates", [])
+    result_1 = {"user_currencies": {x["currency"]: x["rate"] for x in currencies_list}}
+    result_2 = {"user_stocks": {x["stock"]: x["price"] for x in stocks}}
+    logging.info('Получены словари по акциям и курсам валют!')
+    return result_1 | result_2
+
+
+def save_currencies_and_stocks(result_currencies_and_stocks: dict) -> None:
+    '''Переводим результаты функции get_currencies_and_stocks в формат json и сохраняем в файл формата json.'''
+
+    file_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    file_path_json = os.path.join(file_path, 'data', 'user_settings.json')
+
+    with open(file_path_json, 'w', encoding='utf-8') as f:
+        json.dump(result_currencies_and_stocks, f, ensure_ascii=False, indent=4)
+
+    logging.info('Данные по акциям и курсам валют сохранены в файл user_settings.json.')
+    return None
+
+

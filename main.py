@@ -5,7 +5,7 @@ from src.views import (cashback, file_csv_stocks, get_csv_stocks,
                        get_exchange_rate, get_result_list_transaction_by_date,
                        get_stocks, get_time, get_transactions_excel,
                        greeting_users, mask_card, payment_amount,
-                       total_expenses)
+                       total_expenses, get_currencies_and_stocks, save_currencies_and_stocks)
 
 if __name__ == "__main__":
 
@@ -119,6 +119,19 @@ if __name__ == "__main__":
         if input_answer == "да":
             exchange_rate = get_exchange_rate()
             print("Получены сведения о курсе валют.")
+            break
+        elif input_answer == "нет":
+            exchange_rate = None
+            break
+
+    # Получаем сведения о курсе валют и акциях.
+    print("Программа: Сохранить данные об акциях и курсу валют в json-файл?")
+    while True:
+        input_answer = input("Программа: Введите ответ: да или нет.").lower()
+        if input_answer == "да":
+            dict_currencies_and_stocks = get_currencies_and_stocks(get_csv_stocks(), get_exchange_rate())
+            save_currencies_and_stocks(dict_currencies_and_stocks)
+            print("Данные о курсе валют и акциях сохранены!")
             break
         elif input_answer == "нет":
             exchange_rate = None
