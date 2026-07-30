@@ -1,0 +1,13 @@
+{
+    "user_currencies": {
+        "USD": 71.9077,
+        "EUR": 82.9743
+    },
+    "user_stocks": {
+        "AAPL": 295.63,
+        "GOOGL": 357.77,
+        "MSFT": 390.34,
+        "AMZN": 241.51,
+        "TSLA": 399.15
+    }
+}
